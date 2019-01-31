@@ -8,19 +8,35 @@ import org.http4s.HttpService
 import org.http4s.circe.CirceEntityCodec._
 import org.http4s.dsl.Http4sDsl
 import org.typelevel.workshop.algebra.ProjectRepository
+import org.typelevel.workshop.algebra._
 
-class ProjectService[F[_]: Sync: ProjectRepository] extends Http4sDsl[F] {
+class ProjectService[F[_]: Sync: ProjectRepository: Logging] extends Http4sDsl[F] {
 
   def service: HttpService[F] = HttpService[F] {
 
+    case GET -> Root / "all" =>
+      ProjectRepository[F].findAll().flatMap(l => Ok(l))
+
     case GET -> Root / name =>
       ProjectRepository[F].findByName(name).flatMap {
-        case Some(project) => Ok(project)
-        case None => NotFound(s"No project found: $name".asJson)
+        case Some(project) => {
+          Logging[F].log(s"Fetched project successfully: $name") *>
+            Ok(project)
+        }
+        case None => {
+          val errMsg = s"No project found: $name"
+          Logging[F].log(errMsg) *>
+          NotFound(errMsg.asJson)
+        }
       }
+
+    case req @ POST -> Root / "update" =>
+      ???
 
     case req @ DELETE -> Root / name =>
       ProjectRepository[F].deleteProject(name).flatMap(_ => NoContent())
+
+
 
   }
 }

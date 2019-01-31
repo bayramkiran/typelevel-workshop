@@ -1,7 +1,7 @@
 package org.typelevel.workshop.algebra
 
 trait Logging[F[_]] {
-
+  def log(s: String): F[Unit]
 }
 
 object Logging {

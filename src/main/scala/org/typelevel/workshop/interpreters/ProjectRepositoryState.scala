@@ -12,5 +12,19 @@ object ProjectRepositoryState {
 
       def deleteProject(name: String): State[List[Project], Unit] =
         State.modify[List[Project]](_.filter(_.name == name))
+
+      def findAll(): State[List[Project], List[Project]] =
+        State.get[List[Project]]
+
+      def updateProject(id: Int, name: String, description: String): State[List[Project], Unit] =
+        State.modify[List[Project]] {list: List[Project] =>
+          val projectOpt = list.find(_.id == id)
+
+          projectOpt.map { project =>
+            val updatedProject: Project = project.copy(name = name, description = description)
+            updatedProject :: list.filter(_.id != project.id)
+          }.getOrElse(list)
+
+        }
     }
 }

@@ -22,5 +22,16 @@ object ProjectRepositoryIO {
       projectId <- sql"SELECT id FROM project WHERE name = $name".query[Int].unique
       _ <- sql"DELETE FROM project WHERE id = $projectId".update.run
     } yield ()).transact(Database.xa).attempt.void
+
+    def findAll(): IO[List[Project]] =
+      sql"""
+        SELECT p.id, p.name, p.description, u.id, u.username, u.email
+        FROM project p JOIN user u ON p.owner = u.id
+      """.query[Project].to[List].transact(Database.xa)
+
+    def updateProject(id: Int, name: String, description: String): IO[Unit] = (for {
+      projectId <- sql"SELECT id FROM project WHERE id = $id".query[Int].unique
+      _ <- sql"UPDATE project SET name = $name, description = $description WHERE id = $projectId".update.run
+    } yield ()).transact(Database.xa).attempt.void
   }
 }

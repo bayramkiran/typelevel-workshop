@@ -43,6 +43,10 @@ object Database {
     sql"""
       INSERT INTO project (id, name, description, owner)
       VALUES  (0, 'Cats', 'Functional abstractions for Scala', 1);
+    """.update.run,
+    sql"""
+      INSERT INTO project (id, name, description, owner)
+      VALUES  (1, 'new project', 'workshop',  0);
     """.update.run
   ).traverse_(_.transact(xa))
 }

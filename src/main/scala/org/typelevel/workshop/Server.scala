@@ -7,6 +7,7 @@ import fs2.{Stream, StreamApp}
 import org.http4s.server.blaze.BlazeBuilder
 import org.typelevel.workshop.http.{ProjectService, UserService}
 import org.typelevel.workshop.db.Database
+import org.typelevel.workshop.algebra._
 import org.typelevel.workshop.interpreters.ProjectRepositoryIO._
 import org.typelevel.workshop.interpreters.UserRepositoryIO._
 
